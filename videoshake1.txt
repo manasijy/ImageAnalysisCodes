@@ -1,0 +1,24 @@
+% compute the similarity transformation
+tt = cp2tform(inp, outp, 'linear conformal');
+L = tt.tdata.T;
+scale = sqrt(L(1,1)^2 + L(1,2)^2);
+L(:,1:2) = L(:,1:2)/scale;
+% sum the transforms up 
+T = T + L;
+end
+
+% get the average transformation
+T = T/count;
+
+% warping by backprojection.
+% inv(T) is the transform from target back to the original image 
+T = inv(T); 
+
+width = size(im, 2);
+height = size(im, 1);
+% x and y are coordinates on the warped image
+[x,y] = meshgrid(1:width, 1:height);
+nxy = [x(:), y(:), ones(length(x(:)), 1)] * T;
+% newx and newx are corresponding point coordinates in the original image
+newx = reshape(nxy(:,1), height, width);
+newy = reshape(nxy(:,2), height, width);
